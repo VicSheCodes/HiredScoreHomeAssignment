@@ -1,0 +1,214 @@
+
+Part 1 - Database Querying 
+
+first query: Has “FED” or “FS” positions available
+
+query:
+
+db.collection.find({
+  $or: [
+    {
+      "positions": "FED"
+    },
+    {
+      "positions": "FS"
+    }
+  ]
+})	
+
+result:
+
+[
+  {
+    "_id": ObjectId("5a934e000102030405000000"),
+    "account": "acount_1",
+    "positions": [
+      "FS",
+      "BE"
+    ],
+    "req_id": 128291,
+    "team": "Ninjas",
+    "years_max": 5,
+    "years_min": 2
+  },
+  {
+    "_id": ObjectId("5a934e000102030405000001"),
+    "account": "acount_2",
+    "positions": [
+      "OPS",
+      "FS"
+    ],
+    "req_id": 128292,
+    "team": "GreatOnes",
+    "years_max": 5,
+    "years_min": 3
+  },
+  {
+    "_id": ObjectId("5a934e000102030405000002"),
+    "account": "acount_3",
+    "positions": [
+      "BI",
+      "DS",
+      "FED",
+      "FS"
+    ],
+    "req_id": 128293,
+    "team": "Fighters",
+    "years_max": 6,
+    "years_min": 4
+  },
+  {
+    "_id": ObjectId("5a934e000102030405000004"),
+    "account": "acount_5",
+    "positions": [
+      "FS",
+      "QA"
+    ],
+    "req_id": 128295,
+    "team": "LeaveIt2us",
+    "years_max": 3,
+    "years_min": 0
+  }
+]
+
+second query: Require at least 3 years of experience
+
+query:
+
+db.collection.find({
+  years_min: {
+    $gt: 2
+  }
+})
+
+result:
+
+[
+  {
+    "_id": ObjectId("5a934e000102030405000001"),
+    "account": "acount_2",
+    "positions": [
+      "OPS",
+      "FS"
+    ],
+    "req_id": 128292,
+    "team": "GreatOnes",
+    "years_max": 5,
+    "years_min": 3
+  },
+  {
+    "_id": ObjectId("5a934e000102030405000002"),
+    "account": "acount_3",
+    "positions": [
+      "BI",
+      "DS",
+      "FED",
+      "FS"
+    ],
+    "req_id": 128293,
+    "team": "Fighters",
+    "years_max": 6,
+    "years_min": 4
+  },
+  {
+    "_id": ObjectId("5a934e000102030405000003"),
+    "account": "acount_4",
+    "positions": [
+      "PRODUCT",
+      "OPS",
+      "QA"
+    ],
+    "req_id": 128294,
+    "team": "CanDoers",
+    "years_max": 10,
+    "years_min": 6
+  }
+]
+
+third query: Has at least 3 positions
+
+query:
+
+db.collection.aggregate([
+  {
+    "$match": {
+      "positions.2": {
+        "$exists": true
+      }
+    }
+  }
+])
+
+result:
+	
+[
+  {
+    "_id": ObjectId("5a934e000102030405000002"),
+    "account": "acount_3",
+    "positions": [
+      "BI",
+      "DS",
+      "FED",
+      "FS"
+    ],
+    "req_id": 128293,
+    "team": "Fighters",
+    "years_max": 6,
+    "years_min": 4
+  },
+  {
+    "_id": ObjectId("5a934e000102030405000003"),
+    "account": "acount_4",
+    "positions": [
+      "PRODUCT",
+      "OPS",
+      "QA"
+    ],
+    "req_id": 128294,
+    "team": "CanDoers",
+    "years_max": 10,
+    "years_min": 6
+  }
+]
+
+
+all in one query:
+
+db.collection.aggregate([
+  {
+    "$match": {
+      "positions.2": {
+        "$exists": true
+      },
+      years_min: {
+        $gt: 2
+      },
+      $or: [
+        {
+          "positions": "FED"
+        },
+        {
+          "positions": "FS"
+        }
+      ]
+    }
+  }
+])
+
+result:
+[
+  {
+    "_id": ObjectId("5a934e000102030405000002"),
+    "account": "acount_3",
+    "positions": [
+      "BI",
+      "DS",
+      "FED",
+      "FS"
+    ],
+    "req_id": 128293,
+    "team": "Fighters",
+    "years_max": 6,
+    "years_min": 4
+  }
+]
